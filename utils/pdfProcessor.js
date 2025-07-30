@@ -46,7 +46,7 @@ export async function processPdf(fileBuffer, documentId) {
 
       const embedding = response?.data?.[0]?.embedding;
       if (!embedding) {
-        console.warn(`⚠️ No embedding returned for chunk index ${index}`);
+        console.warn(`No embedding returned for chunk index ${index}`);
         continue;
       }
 
@@ -57,7 +57,7 @@ export async function processPdf(fileBuffer, documentId) {
         chunk_index: index,
       });
     } catch (err) {
-      console.error(`❌ Error processing chunk ${index}:`, err);
+      console.error(`Error processing chunk ${index}:`, err);
     }
   }
 

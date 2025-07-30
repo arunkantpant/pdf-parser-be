@@ -2,7 +2,8 @@ import express from "express";
 import multer from "multer";
 import { supabase } from "../utils/supabaseClient.js";
 import { processPdf } from "../utils/pdfProcessor.js";
-import { classifyDocument } from "../agents/classifierAgent.js";
+import { classifierAgent } from "../agents/classifierAgent.js";
+import { run } from "@openai/agents";
 
 const upload = multer();
 const router = express.Router();
@@ -28,7 +29,12 @@ router.post("/", upload.single("file"), async (req, res) => {
     const documentId = docData.id;
 
     const { chunks, text } = await processPdf(req.file.buffer, documentId);
-    const domain = await classifyDocument(text);
+
+    const classificationResult = await run(
+      classifierAgent,
+      text.slice(0, 3000)
+    );
+    const domain = classificationResult.finalOutput.trim();
 
     await supabase.from("documents").update({ domain }).eq("id", documentId);
 
